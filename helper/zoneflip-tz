@@ -1,0 +1,63 @@
+#!/bin/bash
+#
+# ZoneFlip privileged helper.
+#
+# Installed as root:wheel 0755 at /usr/local/libexec/zoneflip-tz.
+# The only way to call it without a password is through /etc/sudoers.d/zoneflip,
+# which lists this exact binary plus one of the fixed arguments below.
+# It never evaluates user input: every accepted argument maps to a hard-coded
+# IANA zone. Anything else exits with usage error 64.
+#
+set -euo pipefail
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+
+CN_ZONE="Asia/Shanghai"
+AUTO_PLIST="/Library/Preferences/com.apple.timezone.auto"
+
+set_auto() {
+  /usr/bin/defaults write "$AUTO_PLIST" Active -bool "$1"
+}
+
+set_zone() {
+  /usr/sbin/systemsetup -settimezone "$1" >/dev/null
+}
+
+case "${1:-}" in
+  cn)
+    set_zone "$CN_ZONE"
+    # Stock macOS behaviour: let Location Services keep the zone in sync.
+    set_auto true
+    ;;
+  us-west)
+    set_zone "America/Los_Angeles"
+    set_auto false
+    ;;
+  us-east)
+    set_zone "America/New_York"
+    set_auto false
+    ;;
+  us-central)
+    set_zone "America/Chicago"
+    set_auto false
+    ;;
+  us-mountain)
+    set_zone "America/Denver"
+    set_auto false
+    ;;
+  auto-on)
+    set_auto true
+    ;;
+  auto-off)
+    set_auto false
+    ;;
+  status)
+    zone="$(/usr/bin/readlink /etc/localtime || true)"
+    zone="${zone##*/zoneinfo/}"
+    auto="$(/usr/bin/defaults read "$AUTO_PLIST" Active 2>/dev/null || echo 1)"
+    printf 'zone=%s\nauto=%s\n' "$zone" "$auto"
+    ;;
+  *)
+    echo "usage: zoneflip-tz {cn|us-west|us-east|us-central|us-mountain|auto-on|auto-off|status}" >&2
+    exit 64
+    ;;
+esac

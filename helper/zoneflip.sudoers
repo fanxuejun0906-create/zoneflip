@@ -1,0 +1,4 @@
+# ZoneFlip: let members of the admin group switch the system time zone
+# without a password prompt. Only these exact commands are allowed.
+# Remove with: sudo rm /etc/sudoers.d/zoneflip
+%admin ALL=(root) NOPASSWD: /usr/local/libexec/zoneflip-tz cn, /usr/local/libexec/zoneflip-tz us-west, /usr/local/libexec/zoneflip-tz us-east, /usr/local/libexec/zoneflip-tz us-central, /usr/local/libexec/zoneflip-tz us-mountain, /usr/local/libexec/zoneflip-tz auto-on, /usr/local/libexec/zoneflip-tz auto-off, /usr/local/libexec/zoneflip-tz status
