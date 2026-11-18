@@ -15,7 +15,23 @@
 - 只改 macOS 的系统时区（`/etc/localtime`），浏览器、日历、Git、Claude Code 看到的时间会一起变。
 - 免密助手只接受 5 个固定时区参数，装一次之后切换零弹窗。
 
-### 安装
+### 下载即用
+
+不想装 Xcode、不想编译，直接用打包好的 universal 版本（Apple Silicon + Intel，macOS 11+）：
+
+1. 到 [Releases](https://github.com/fanxuejun0906-create/zoneflip/releases/latest) 下载 `ZoneFlip.zip`，解压
+2. 把 `ZoneFlip.app` 拖进「应用程序」
+3. 首次打开被 Gatekeeper 拦下时：**系统设置 → 隐私与安全性 → 仍要打开**
+
+或者一行命令完成下载、安装、去隔离并启动：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fanxuejun0906-create/zoneflip/main/scripts/remote-install.sh | bash
+```
+
+> App 没有 Apple 开发者签名和公证（那需要付费账号），浏览器下载的包首次会被系统拦一次；用上面的命令或「仍要打开」即可，之后正常双击。
+
+### 从源码安装
 
 ```bash
 git clone https://github.com/fanxuejun0906-create/zoneflip.git
@@ -31,7 +47,7 @@ bash scripts/install.sh
 bash scripts/build.sh      # 产物在 dist/ZoneFlip.app
 ```
 
-要求：macOS 13+，Apple Silicon（Intel 需要把 `scripts/build.sh` 里的 `-target arm64-…` 换成 `x86_64-…`）。
+要求：macOS 11+。构建脚本会同时产出 Apple Silicon 和 Intel，合成一个 universal App。
 
 ### 用法
 
@@ -115,6 +131,7 @@ helper/
 Resources/Info.plist
 scripts/build.sh        swiftc 编译 + 组装 .app
 scripts/install.sh      构建 + 安装到 /Applications
+scripts/remote-install.sh  一行命令安装最新 Release
 scripts/uninstall.sh
 scripts/make_icon.py    生成 AppIcon.icns
 ```
@@ -134,7 +151,23 @@ ZoneFlip is a tiny native macOS menu bar app that flips the **system time zone**
 - Turns macOS "Set time zone automatically" **off** while on a US zone (so Location Services cannot fight it) and **on** again when switching back to China.
 - Launch at login toggle. No account, no telemetry, no background daemon.
 
-### Install
+### Download & run
+
+No Xcode, no build step — grab the universal build (Apple Silicon + Intel, macOS 11+):
+
+1. Download `ZoneFlip.zip` from [Releases](https://github.com/fanxuejun0906-create/zoneflip/releases/latest) and unzip it
+2. Drag `ZoneFlip.app` into `/Applications`
+3. If Gatekeeper blocks the first launch: **System Settings → Privacy & Security → Open Anyway**
+
+Or do download + install + de-quarantine + launch in one line:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fanxuejun0906-create/zoneflip/main/scripts/remote-install.sh | bash
+```
+
+> The app is ad-hoc signed, not notarized (that requires a paid Apple Developer account), so a browser-downloaded copy triggers Gatekeeper once. The command above or "Open Anyway" gets you past it; later launches are normal.
+
+### Build from source
 
 ```bash
 git clone https://github.com/fanxuejun0906-create/zoneflip.git
@@ -142,7 +175,7 @@ cd zoneflip
 bash scripts/install.sh
 ```
 
-It builds with `swiftc`, installs to `/Applications/ZoneFlip.app` and launches it. Requirements: macOS 13+, Apple Silicon. For Intel, change `-target arm64-apple-macos13.0` to `x86_64-apple-macos13.0` in `scripts/build.sh`.
+It builds with `swiftc`, installs to `/Applications/ZoneFlip.app` and launches it. Requirements: macOS 11+. The build script produces a universal binary (Apple Silicon + Intel).
 
 To build without installing: `bash scripts/build.sh` → `dist/ZoneFlip.app`.
 
